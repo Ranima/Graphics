@@ -1,8 +1,11 @@
 
-#include "iostream"
+#ifdef _DEBUG
+#include <iostream>
+#endif
 #include "glglew.h"
 #include "Graphics\RenderObjects.h"
 #include "Graphics\Vertex.h"
+
 
 
 Geometry makeGeometry(const Vertex *verts, size_t vsize,
@@ -55,7 +58,9 @@ Shader makeShader(const char *vert_src, const char *frag_src)
 	glShaderSource(fs, 1, &frag_src, 0);
 
 	glCompileShader(vs);
-	#ifdef _DEBUG
+	glCompileShader(fs);
+
+#ifdef _DEBUG
 	GLint success = GL_FALSE;
 	glGetShaderiv(vs, GL_COMPILE_STATUS, &success);
 	if (success == GL_FALSE) 
@@ -67,9 +72,10 @@ Shader makeShader(const char *vert_src, const char *frag_src)
 		std::cerr << log << std::endl;
 		delete[] log;
 	}
-#endif
+#endif _DEBUG
 
 #ifdef _DEBUG
+	GLint success = GL_FALSE;
 	glGetShaderiv(fs, GL_COMPILE_STATUS, &success);
 	if (success == GL_FALSE)
 	{
@@ -80,9 +86,8 @@ Shader makeShader(const char *vert_src, const char *frag_src)
 		std::cerr << log << std::endl;
 		delete[] log;
 	}
-#endif 
+#endif  _DEBUG
 
-	glCompileShader(fs);
 
 	glAttachShader(retval.handle, vs);
 	glAttachShader(retval.handle, fs);

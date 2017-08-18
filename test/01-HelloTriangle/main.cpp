@@ -4,28 +4,37 @@
 #include "Graphics\Vertex.h"
 #include "Graphics\Draw.h"
 
+
 int main()
 {
 	Context context;
 	context.init(800, 600);
 
-	Vertex verts[3] = { {{-.5f,-.5f,0,1}},
+	Vertex verts[4] = {{{.0f,.0f,0,1}},
 					   {{.5f,-.5f,0,1}},
-					   {{0,.5f,0,1}} };
+					   {{.25f,.5f,0,1}},
+					   {{.5f,.5f,0,1}} };
 
-	unsigned idxs[3] = { 0,1,2 };
+	unsigned idxs[6] = { 0,1,2,3,2,1 };
 
-	Geometry g = makeGeometry(verts, 3, idxs, 3);
+	Geometry g = makeGeometry(verts, 4, idxs, 6);
 
 	const char* vsource =
 		"#version 450\n"
 		"layout(location = 0) in vec4 position;\n"
-		"void main () { gl_Position = position; }\n";
+		"layout(location = 1) in vec4 color\n"
+		"out vec4 vPos;\n"
+		"void main () {vPos = position;\n"
+		"gl_Position = position; }\n";
 
 	const char* fsource =
 		"#version 450\n"
+		"in vec4 vPos;\n"
 		"out vec4 outColor;\n"
-		"void main () { outColor = vec4(0.5, 0.5, 0.0, 1.0); }\n";
+		"void main () \n"
+		"{\n"
+			" outColor = 0.5 - vPos; \n"
+		"}\n";
 
 	Shader s = makeShader(vsource, fsource);
 
