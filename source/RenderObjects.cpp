@@ -75,7 +75,7 @@ Shader makeShader(const char *vert_src, const char *frag_src)
 #endif _DEBUG
 
 #ifdef _DEBUG
-	GLint success = GL_FALSE;
+	success = GL_FALSE;
 	glGetShaderiv(fs, GL_COMPILE_STATUS, &success);
 	if (success == GL_FALSE)
 	{
@@ -83,6 +83,20 @@ Shader makeShader(const char *vert_src, const char *frag_src)
 		glGetShaderiv(fs, GL_INFO_LOG_LENGTH, &length);
 		char *log = new char[length];
 		glGetShaderInfoLog(fs, length, 0, log);
+		std::cerr << log << std::endl;
+		delete[] log;
+	}
+#endif  _DEBUG
+
+#ifdef _DEBUG
+	success = GL_FALSE;
+	glGetShaderiv(retval.handle, GL_LINK_STATUS, &success);
+	if (success == GL_FALSE)
+	{
+		int length = 0;
+		glGetShaderiv(retval.handle, GL_INFO_LOG_LENGTH, &length);
+		char *log = new char[length];
+		glGetShaderInfoLog(retval.handle, length, 0, log);
 		std::cerr << log << std::endl;
 		delete[] log;
 	}
