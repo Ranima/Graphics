@@ -13,8 +13,14 @@ void s0_draw(const Framebuffer &f,
 
 void clearFramebuffer(const Framebuffer &f);
 
-void setUniform(const Shader&s, int location, float value);
-void setUniform(const Shader&s, int location, int value);
+void setUniform(const Shader&s, int location, float value)
+{
+	glProgramUniform1f(s.handle, location, value);
+}
+void setUniform(const Shader&s, int location, int value)
+{
+	glProgramUniform1i(s.handle, location, value);
+}
 void setUniform(const Shader&s, int location, double value);
 
 void setUniform(const Shader&s, int location, const Texture &value, unsigned slot)
