@@ -43,18 +43,20 @@ Texture makeTexture(unsigned w, unsigned h, unsigned c, const unsigned char *pix
 	unsigned f = 0;
 	switch (c)
 	{
-	case 1: GL_RED; break;
-	case 2: GL_RG;	break;
-	case 3: GL_RGB; break;
-	case 4: GL_RGBA; break;
+	case 1: f = GL_RED; break;
+	case 2: f = GL_RG;	break;
+	case 3: f = GL_RGB; break;
+	case 4: f = GL_RGBA; break;
 	}
 
 	glGenTextures(1, &retval.handle);
 	glBindTexture(GL_TEXTURE_2D, retval.handle);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, f, w, h, 0, f, GL_UNSIGNED_BYTE, pixels);
-
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	return retval;
 };
 
