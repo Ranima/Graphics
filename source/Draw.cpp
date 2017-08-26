@@ -20,10 +20,17 @@ void s0_draw(const Framebuffer &f,
 	glBindVertexArray(0);
 }
 
-void clearFramebuffer(const Framebuffer &f)
+//void clearFramebuffer(const Framebuffer &f)
+//{
+//	glBindFramebuffer(GL_FRAMEBUFFER, f.handle);
+//	glClear(GL_COLOR_BUFFER_BIT);
+//	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+//}
+
+void clearFramebuffer(const Framebuffer &r, bool color, bool depth)
 {
-	glBindFramebuffer(GL_FRAMEBUFFER, f.handle);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glBindFramebuffer(GL_FRAMEBUFFER, r.handle);
+	glClear(GL_COLOR_BUFFER_BIT * color | GL_DEPTH_BUFFER_BIT * depth);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
@@ -40,4 +47,18 @@ void setUniform(const Shader &s, int location, int value)
 void setUniform(const Shader &s, int location, double value)
 {
 	glProgramUniform1d(s.handle, location, value);
+}
+
+void setUniform(const Shader&s, int location, const Texture &value, unsigned slot)
+{
+	glActiveTexture(GL_TEXTURE0 + slot);
+	glBindTexture(GL_TEXTURE_2D, value.handle);
+
+	glProgramUniform1i(s.handle, location, slot);
+}
+
+void setFlags(int flags)
+{
+	if (flags & RenderFlag::DEPTH) glEnable(GL_DEPTH_TEST);
+	else glDisable(GL_DEPTH_TEST);
 }

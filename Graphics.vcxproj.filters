@@ -48,4 +48,8 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\shaders\mvplite.vert" />
+    <None Include="resources\shaders\mvplite.frag" />
+  </ItemGroup>
 </Project>

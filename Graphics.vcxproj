@@ -143,6 +143,10 @@
     <ClInclude Include="include\Graphics\load.h" />
     <ClInclude Include="source\glglew.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\shaders\mvplite.frag" />
+    <None Include="resources\shaders\mvplite.vert" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

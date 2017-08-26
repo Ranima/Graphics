@@ -26,10 +26,14 @@ Geometry makeGeometry(const Vertex *verts, size_t vsize,
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER,
 		isize * sizeof(unsigned), idxs, GL_STATIC_DRAW);
 
-	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(0); // position
+	glVertexAttribPointer(0,4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) 0);
 
-	glVertexAttribPointer(0,4, GL_FLOAT, GL_FALSE,
-						  sizeof(Vertex), (void*) 0);
+	glEnableVertexAttribArray(1); // color
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)16);
+
+	glEnableVertexAttribArray(2); // texture coordinates
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)32);
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -88,19 +92,6 @@ Shader makeShader(const char *vert_src, const char *frag_src)
 	}
 #endif  _DEBUG
 
-#ifdef _DEBUG
-	success = GL_FALSE;
-	glGetShaderiv(retval.handle, GL_LINK_STATUS, &success);
-	if (success == GL_FALSE)
-	{
-		int length = 0;
-		glGetShaderiv(retval.handle, GL_INFO_LOG_LENGTH, &length);
-		char *log = new char[length];
-		glGetShaderInfoLog(retval.handle, length, 0, log);
-		std::cerr << log << std::endl;
-		delete[] log;
-	}
-#endif  _DEBUG
 
 
 	glAttachShader(retval.handle, vs);
@@ -108,8 +99,63 @@ Shader makeShader(const char *vert_src, const char *frag_src)
 
 	glLinkProgram(retval.handle);
 
+#ifdef _DEBUG
+	success = GL_FALSE;
+	glGetProgramiv(retval.handle, GL_LINK_STATUS, &success);
+	if (success == GL_FALSE)
+	{
+		int length = 0;
+		glGetProgramiv(retval.handle, GL_INFO_LOG_LENGTH, &length);
+		char *log = new char[length];
+		glGetProgramInfoLog(retval.handle, length, 0, log);
+		std::cerr << log << std::endl;
+		delete[] log;
+	}
+#endif  _DEBUG
+
+
+
 	glDeleteShader(vs);
 	glDeleteShader(fs);
 
 	return retval;
+}
+
+
+Texture makeTexture(unsigned w, unsigned h, unsigned c, const unsigned char *pixels)
+{
+	Texture retval = { 0 };
+
+	unsigned f = 0;
+	switch (c)
+	{
+	case 1: f = GL_RED; break;
+	case 2: f = GL_RG;	break;
+	case 3: f = GL_RGB; break;
+	case 4: f = GL_RGBA; break;
+	}
+
+	glGenTextures(1, &retval.handle);
+	glBindTexture(GL_TEXTURE_2D, retval.handle);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, f, w, h, 0, f, GL_UNSIGNED_BYTE, pixels);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	return retval;
+};
+
+void freeTexture(Texture &t)
+{
+	glDeleteTextures(1, &t.handle);
+	t = { 0 };
+};
+
+
+void freeShader(Shader &s)
+{
+	glDeleteProgram(s.handle);
+	s = { 0 };
 }
