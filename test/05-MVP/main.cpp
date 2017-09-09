@@ -7,63 +7,33 @@
 #include "glm\glm\ext.hpp"
 
 
-int main()
+void main()
 {
 	Context context;
-	context.init(800, 600);
-
-	Vertex vquads[] = {
-		{ { -1, -1, 0,1 },{},{ 0,0 } },
-		{ { 1, -1, 0,1 },{},{ 1,0 } },
-		{ { 1,  1, 0,1 },{},{ 1,1 } },
-		{ { -1,  1, 0,1 },{},{ 0,1 } } };
-
-	unsigned quadidx[] = { 0,1,3, 1,2,3 };
-
-	Geometry quad = makeGeometry(vquads, 4, quadidx, 6);
-
-	const char* vsource =
-		"#version 450\n"
-		"layout(location = 0) in vec4 position;\n"
-		"layout(location = 2) in vec2 texCoord;\n"
-		"out vec2 vUV;\n"
-		"void main () {gl_Position = position;\n"
-		"vUV = texCoord; }\n";
-
-	const char* fsource =
-		"#version 450\n"
-		"out vec4 outColor;\n"
-		"in vec2 vUV;\n"
-		"layout(location = 0) uniform sampler2D map;\n"
-		"void main () \n"
-		"{\n"
-		" outColor = texture(map, vUV.xy); \n"
-		"}\n";
-
-	Shader sq = makeShader(vsource, fsource);
+	context.init();
 
 	Geometry spear = loadGeometry("../../resources/models/soulspear.obj");
+	Shader mvplite = loadShader("../../resources/shaders/mvplite.vert", "../../resources/shaders/mvplite.frag");
 
 	Texture tex = loadTexture("../../resources/textures/soulspear_diffuse.tga");
 
-	Shader sfile = loadShader("../../resources/shaders/test.vert",
-							  "../../resources/shaders/test.frag");
-
 	Framebuffer f = { 0, 800, 600 };
 
-	glm::mat4 cam_view = glm::lookAt(glm::vec3(0, 3, -4), glm::vec3(0, 1, 0), glm::vec3(0, 1, 0));
-	glm::mat4 cam_proj = glm::perspective(45.f, 800.f / 600.f, .01f, 100.f);
-	glm::mat4 go_model;
+	glm::mat4 cam_proj = glm::perspective(45.f, 800.f / 600.f, .01f, 10.f);
+	glm::mat4 cam_view = glm::lookAt(glm::vec3(0, 2, 5), glm::vec3(0, 1, 0), glm::vec3(0, 1, 0));
 
 	while (context.step())
 	{
-		clearFramebuffer(screen);
+		float time = context.getTime();
+		glm::mat4 model = glm::rotate(time, glm::vec3(0, 1, 0));
 
+		setFlags(RenderFlag::DEPTH);
+		clearFramebuffer(f);
 
-		setUniform(sfile, 0, tex, 0);
-		s0_draw(f, sfile, spear);
+		int loc = 0, slot = 0;
+		setUniform(mvplite, loc, slot,cam_proj, cam_view, model, tex);
+		s0_draw(f, mvplite, spear);
 	}
 
 	context.term();
-	return 0;
 }
