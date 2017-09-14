@@ -18,5 +18,6 @@ void setUniform(const Shader&s, int location, int value);
 void setUniform(const Shader&s, int location, double value);
 
 void setUniform(const Shader&s, int location, const Texture &value, unsigned slot);
+void setUniform(const Shader&s, int location, int slot, )
 
 void setFlags(int flags);
